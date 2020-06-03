@@ -4,7 +4,18 @@ import pyproj
 import micropyGPS
 import threading
 import time
+from bottle import Bottle, run
 
+#-------------------------------------
+app = Bottle()
+
+@app.route('/hello')
+def hello():
+    return "Hello World!"
+
+run(app, host='localhost', port=8080)
+#-------------------------------------
+#
 grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
 gps = micropyGPS.MicropyGPS(9, 'dd') # JST
 
@@ -44,8 +55,6 @@ declination = -7.5
 while True:
     if gps.clean_sentences > 20: # ちゃんとしたデーターがある程度たまったら出力する
         h = gps.timestamp[0] if gps.timestamp[0] < 24 else gps.timestamp[0] - 24
-#        print('%2d:%02d:%04.1f' % (h, gps.timestamp[1], gps.timestamp[2]))
-#        print('緯度経度: %2.8f, %2.8f' % (gps.latitude[0], gps.longitude[0]))
 
         hour, minute, seconds = h, gps.timestamp[1], gps.timestamp[2]
         lon_now, lat_now = gps.longitude[0], gps.latitude[0]
@@ -61,10 +70,4 @@ while True:
         print(azm_mag, bkw_azm_mag, end="")
         print('\033[0m')
 
-#        print('海抜: %f' % gps.altitude)
-#        print(gps.satellites_used)
-#        print('衛星番号: (仰角, 方位角, SN比)')
-#        for k, v in gps.satellite_data.items():
-#            print('%d: %s' % (k, v))
-#        print('')
     time.sleep(1.0)
