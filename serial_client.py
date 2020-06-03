@@ -38,30 +38,33 @@ gpsthread = threading.Thread(target=rungps, args=()) # 上の関数を実行す�
 gpsthread.daemon = True
 gpsthread.start() # スレッドを起動
 
-
+lon_ref, lat_ref = 135.292489, 34.717932  # 深江
+declination = -7.5
 
 while True:
-#     response = ser.readline()
-#     skt.sendto(response, (ADDRESS, PORT))
-
-#     sentence = response.decode().strip()
-#     print(sentence)   
-
-#     sentences = str(response).replace('\\','').replace('b\'','').replace('\'','').strip().split('r')
-#     for i in range(len(sentence)-1):
-#         print(sentences[i])
-#     tokens = sentence.split(',')    
-#     if tokens[0] == '$GPRMC':
-#        strings=tokens[3] + "," + tokens[4] + "," + tokens[5] + "," + tokens[6]
-#        print('\033[31m' + strings + '\033[0m')
     if gps.clean_sentences > 20: # ちゃんとしたデーターがある程度たまったら出力する
         h = gps.timestamp[0] if gps.timestamp[0] < 24 else gps.timestamp[0] - 24
-        print('%2d:%02d:%04.1f' % (h, gps.timestamp[1], gps.timestamp[2]))
-        print('緯度経度: %2.8f, %2.8f' % (gps.latitude[0], gps.longitude[0]))
-        print('海抜: %f' % gps.altitude)
-        print(gps.satellites_used)
-        print('衛星番号: (仰角, 方位角, SN比)')
-        for k, v in gps.satellite_data.items():
-            print('%d: %s' % (k, v))
-        print('')
+#        print('%2d:%02d:%04.1f' % (h, gps.timestamp[1], gps.timestamp[2]))
+#        print('緯度経度: %2.8f, %2.8f' % (gps.latitude[0], gps.longitude[0]))
+
+        hour, minute, seconds = h, gps.timestamp[1], gps.timestamp[2]
+        lon_now, lat_now = gps.longitude[0], gps.latitude[0]
+
+        azimuth, bkw_azimuth, distance = grs80.inv(lon_now, lat_now, lon_ref, lat_ref)
+        azm_mag, bkw_azm_mag = azimuth - declination, bkw_azimuth + declination
+        nauticalmile = distance / 1852
+
+        print('\033[31m',end="")        
+        print('%2d:%02d:%04.1f' % (hour, minute, seconds))
+        print('%2.8f, %2.8f' % (lat_now, lon_now))
+        print(azimuth, bkw_azimuth, distance, nauticalmile)
+        print(azm_mag, bkw_azm_mag, end="")
+        print('\033[0m')
+
+#        print('海抜: %f' % gps.altitude)
+#        print(gps.satellites_used)
+#        print('衛星番号: (仰角, 方位角, SN比)')
+#        for k, v in gps.satellite_data.items():
+#            print('%d: %s' % (k, v))
+#        print('')
     time.sleep(1.0)
