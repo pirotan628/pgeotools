@@ -6,19 +6,24 @@
 </head>
 <body>
   <h1>おのころ調査用</h1>
-  <p>テストバージョン</p>
-
-  <h2>パラメータ</h2>
-  <h3>目標の緯度・経度</h3>
+  <h2>情報</h2>
+  <b>時刻</b> {{time_n}} </br>
+  <b>現在地</b> 緯度： {{lat_n}}, 経度： {{lon_n}} </br>
+  <b>地図方位</b> 目標へ {{azm}}度, 目標から {{bkw_azm}}度</br>
+  <b>磁石方位</b> 目標へ {{azm_m}}度, 目標から {{bkw_azm_m}}度</br>
+  <b>距離</b>　{{distkm}}[km]　/ {{distnm}} [NM]</br>
+  <hr>
+  <h3>＜設定＞</h3>
+  <h4>現在の目標座標</h4>
+  緯度: {{lat}}, 経度: {{lon}} (地磁気偏角: {{dec}}) </br></br>
   <form name="param" method="POST" action="/input">
-      Latitude: <input type="text" name="lat" placeholder="緯度を入力" required /><br/>
-      Longitude: <input type="text" name="lon" placeholder="経度を入力" required /><br/>
-      Declination: <input type="text" name="dec" placeholder="偏角を入力" required /> (West[-]/East[+])<br/>
+      緯度: <input type="text" name="lat" placeholder="緯度を入力" required /><br/>
+      経度: <input type="text" name="lon" placeholder="経度を入力" required /><br/>
+      地磁気偏角: <input type="text" name="dec" placeholder="偏角を入力" required /> (West[-]/East[+])<br/>
       <input type="submit" value="入力/更新" />
   </form>
-
-  <h2>情報</h2>
-     <p>{testword}</p>
+  <hr>
+  <h3>＜ツール＞</h3>
 
 </body>
 </html>

@@ -15,26 +15,40 @@ ADDRESS = "127.0.0.1"
 skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Serial (source)
-#dev = '/dev/tty.usbserial'  # MacOS
-dev = '/dev/ttyUSB0'        # Linux
+dev = '/dev/tty.usbserial'  # MacOS
+#dev = '/dev/ttyUSB0'        # Linux
 brate = 4800                # borate for BU-353S4 Module
 
 
 def get_param():
-    reffile = 'param.txt'
-    f = open(reffile)
-    lines = f.read()
-    f.close()
+    try:
+       reffile = 'param.txt'
+       f = open(reffile)
+       lines = f.read()
+       f.close()
 
-    line = lines.split('\n')
-    coord = line[0].split(',')
-    #lon_ref, lat_ref = 135.292489, 34.717932  # 深江
-    lon, lat = float(coord[0]), float(coord[1])
+       line = lines.split('\n')
+       coord = line[0].split(',')
+       #lon_ref, lat_ref = 135.292489, 34.717932  # 深江
+       lon, lat = float(coord[0]), float(coord[1])
 
-    #declination = -7.5
-    dec = float(line[1])
-
+       #declination = -7.5
+       dec = float(line[1])
+    except:
+       lon,lat,dec = 0, 0, 0
     return lon, lat, dec
+
+def put_info(line):
+#    try:
+       inffile = 'info.txt'
+       f = open(inffile, mode='w')
+       for i in range(len(line)):
+          f.write(line[i])
+          f.write('\n')
+       f.close
+#    except:
+#        return 1
+       return 0
 
 def rungps(): # GPSモジュールを読み、GPSオブジェクトを更新する
     ser = serial.Serial(dev, brate, timeout=10)    
@@ -73,5 +87,12 @@ while True:
         print('%03.2f, %03.2f, %.2f, %.2f' % (azimuth, bkw_azimuth, distance, nauticalmile))
         print('%03.2f, %03.2f' % (azm_mag, bkw_azm_mag), end="")
         print('\033[0m')
+        
+        line=[]
+        line.append("{0:2d}:{1:02d}:{2:04.1f}".format(hour, minute, seconds))
+        line.append("{0:2.8f}, {1:2.8f}".format(lat_now, lon_now))
+        line.append("{0:03.2f}, {1:03.2f}, {2:.2f}, {3:.2f}".format(azimuth, bkw_azimuth, distance, nauticalmile))
+        line.append("{0:03.2f}, {1:03.2f}".format(azm_mag, bkw_azm_mag))
+        dummy = put_info(line)
 
     time.sleep(1.0)
