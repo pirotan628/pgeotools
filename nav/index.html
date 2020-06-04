@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+  <meta charset="UTF-8">
+  <title>おのころ調査アプリ(Python3 + Bottle)</title>
+</head>
+<body>
+  <h1>おのころ調査用</h1>
+  <p>テストバージョン</p>
+
+  <h2>パラメータ</h2>
+  <h3>目標の緯度・経度</h3>
+  <form name="param" method="POST" action="/input">
+      Latitude: <input type="text" name="lat" placeholder="緯度を入力" required /><br/>
+      Longitude: <input type="text" name="lon" placeholder="経度を入力" required /><br/>
+      Declination: <input type="text" name="dec" placeholder="偏角を入力" required /> (West[-]/East[+])<br/>
+      <input type="submit" value="入力/更新" />
+  </form>
+
+  <h2>情報</h2>
+     <p>{testword}</p>
+
+</body>
+</html>

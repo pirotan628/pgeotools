@@ -4,18 +4,7 @@ import pyproj
 import micropyGPS
 import threading
 import time
-#from bottle import Bottle, run
 
-#-------------------------------------
-#app = Bottle()
-#
-#@app.route('/hello')
-#def hello():
-#    return "Hello World!"
-#
-#run(app, host='localhost', port=8080)
-#-------------------------------------
-#
 grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
 gps = micropyGPS.MicropyGPS(9, 'dd') # JST
 
@@ -26,10 +15,26 @@ ADDRESS = "127.0.0.1"
 skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Serial (source)
-dev = '/dev/tty.usbserial'  # MacOS
-#dev = '/dev/ttyUSB0'        # Linux
+#dev = '/dev/tty.usbserial'  # MacOS
+dev = '/dev/ttyUSB0'        # Linux
 brate = 4800                # borate for BU-353S4 Module
 
+
+def get_param():
+    reffile = 'param.txt'
+    f = open(reffile)
+    lines = f.read()
+    f.close()
+
+    line = lines.split('\n')
+    coord = line[0].split(',')
+    #lon_ref, lat_ref = 135.292489, 34.717932  # 深江
+    lon, lat = float(coord[0]), float(coord[1])
+
+    #declination = -7.5
+    dec = float(line[1])
+
+    return lon, lat, dec
 
 def rungps(): # GPSモジュールを読み、GPSオブジェクトを更新する
     ser = serial.Serial(dev, brate, timeout=10)    
@@ -49,11 +54,10 @@ gpsthread = threading.Thread(target=rungps, args=()) # 上の関数を実行す�
 gpsthread.daemon = True
 gpsthread.start() # スレッドを起動
 
-lon_ref, lat_ref = 135.292489, 34.717932  # 深江
-declination = -7.5
 
 while True:
-    if gps.clean_sentences > 20: # ちゃんとしたデーターがある程度たまったら出力する
+    lon_ref, lat_ref, declination = get_param()
+    if gps.clean_sentences > 20: # Wait for enough data
         h = gps.timestamp[0] if gps.timestamp[0] < 24 else gps.timestamp[0] - 24
 
         hour, minute, seconds = h, gps.timestamp[1], gps.timestamp[2]
@@ -66,8 +70,8 @@ while True:
         print('\033[31m',end="")        
         print('%2d:%02d:%04.1f' % (hour, minute, seconds))
         print('%2.8f, %2.8f' % (lat_now, lon_now))
-        print(azimuth, bkw_azimuth, distance, nauticalmile)
-        print(azm_mag, bkw_azm_mag, end="")
+        print('%03.2f, %03.2f, %.2f, %.2f' % (azimuth, bkw_azimuth, distance, nauticalmile))
+        print('%03.2f, %03.2f' % (azm_mag, bkw_azm_mag), end="")
         print('\033[0m')
 
     time.sleep(1.0)
