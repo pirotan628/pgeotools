@@ -71,4 +71,8 @@ def input():
     dummy = put_param(lon,lat,dec)
     return redirect("/")
 
+@route("/refresh", method="POST")
+def refresh():
+    return redirect("/")  
+
 run(host="localhost", port=8080, debug=True, reloader=True)

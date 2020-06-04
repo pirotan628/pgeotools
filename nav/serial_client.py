@@ -73,7 +73,7 @@ while True:
     lon_ref, lat_ref, declination = get_param()
     if gps.clean_sentences > 20: # Wait for enough data
         h = gps.timestamp[0] if gps.timestamp[0] < 24 else gps.timestamp[0] - 24
-
+        year, month, day = gps.date[2], gps.date[1], gps.date[0]
         hour, minute, seconds = h, gps.timestamp[1], gps.timestamp[2]
         lon_now, lat_now = gps.longitude[0], gps.latitude[0]
 
@@ -82,17 +82,17 @@ while True:
         nauticalmile = distance / 1852
 
         print('\033[31m',end="")        
-        print('%2d:%02d:%04.1f' % (hour, minute, seconds))
+        print('20%02d/%02d/%02d %2d:%02d:%04.1f' % (year, month, day, hour, minute, seconds))
         print('%2.8f, %2.8f' % (lat_now, lon_now))
         print('%03.2f, %03.2f, %.2f, %.2f' % (azimuth, bkw_azimuth, distance, nauticalmile))
         print('%03.2f, %03.2f' % (azm_mag, bkw_azm_mag), end="")
         print('\033[0m')
         
         line=[]
-        line.append("{0:2d}:{1:02d}:{2:04.1f}".format(hour, minute, seconds))
+        line.append("20{0:02d}/{1:02d}/{2:02d} {3:02d}:{4:02d}:{5:04.1f}".format(year, month, day, hour, minute, seconds))
         line.append("{0:2.8f}, {1:2.8f}".format(lat_now, lon_now))
         line.append("{0:03.2f}, {1:03.2f}, {2:.2f}, {3:.2f}".format(azimuth, bkw_azimuth, distance, nauticalmile))
         line.append("{0:03.2f}, {1:03.2f}".format(azm_mag, bkw_azm_mag))
         dummy = put_info(line)
 
-    time.sleep(1.0)
+    #time.sleep(1.0)
