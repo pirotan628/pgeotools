@@ -104,3 +104,16 @@ def twt2depth(twt):
 def depth2twt(depth):
     twt = 1000 * abs(2 * depth) / 1500
     return twt
+
+def make_regular_interval(lon0, lat0, azm, dist, itr):
+    xyarray = []
+    xy = [lon0, lat0]
+    xyarray.append(xy)
+    for i in range(itr):
+        result = great_circle(distance=dist, azimuth=azm, latitude=lat0, longitude=lon0)
+#        print( "{0} {1}".format(result['longitude'],result['latitude']))
+        lon0, lat0 = result['longitude'], result['latitude']
+        xy = [lon0, lat0]
+        xyarray.append(xy)
+
+    return xyarray
