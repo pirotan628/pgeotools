@@ -111,9 +111,33 @@ def make_regular_interval(lon0, lat0, azm, dist, itr):
     xyarray.append(xy)
     for i in range(itr):
         result = great_circle(distance=dist, azimuth=azm, latitude=lat0, longitude=lon0)
-#        print( "{0} {1}".format(result['longitude'],result['latitude']))
         lon0, lat0 = result['longitude'], result['latitude']
         xy = [lon0, lat0]
         xyarray.append(xy)
+
+    return xyarray
+
+def make_mesh_line(lon0, lat0, azm, dist, itr):
+    xazm = azm + 90
+    lon1, lat1 = lon0, lat0
+
+    iarray = []
+    xarray = []
+
+    xy_i = [lon0, lat0]
+    xy_x = [lon1, lat1]
+
+    iarray.append(xy_i)
+    xarray.append(xy_x)
+
+    for i in range(itr):
+        result_i1 = great_circle(distance=dist, azimuth=azm, latitude=lat0, longitude=lon0)
+        result_x1 = great_circle(distance=dist, azimuth=xazm, latitude=lat1, longitude=lon1)
+        lon0, lat0 = result_i1['longitude'], result_i1['latitude']
+        lon1, lat1 = result_x1['longitude'], result_x1['latitude']
+        xy_i = [lon0, lat0]
+        xy_x = [lon1, lat1]
+        iarray.append(xy_i)
+        xarray.append(xy_x)
 
     return xyarray
