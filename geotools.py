@@ -54,8 +54,8 @@ def read_dms2xy(line_in):
     line = line_in.strip()
     token = [x.strip() for x in re.split('[\t\s]', line)]
     if len(token) > 1:
-        lat0 = [float(token[0]), float(token[1]), float(token[2])]
-        lon0 = [float(token[3]), float(token[4]), float(token[5])]
+        lon0 = [float(token[0]), float(token[1]), float(token[2])]
+        lat0 = [float(token[3]), float(token[4]), float(token[5])]
         lon, lat = dms2dec(lon0), dms2dec(lat0)
     else:
         return False
@@ -66,8 +66,8 @@ def read_dm2xy(line_in):
     line = line_in.strip()
     token = [x.strip() for x in re.split('[\t\s]', line)]
     if len(token) > 1:
-        lat0 = [float(token[0]), float(token[1]), 0]
-        lon0 = [float(token[2]), float(token[3]), 0]
+        lon0 = [float(token[0]), float(token[1]), 0]
+        lat0 = [float(token[2]), float(token[3]), 0]
         lon, lat = dms2dec(lon0), dms2dec(lat0)
     else:
         return False
