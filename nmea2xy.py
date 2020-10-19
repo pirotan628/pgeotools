@@ -1,11 +1,16 @@
-import sys
-import pyproj
-import micropyGPS
+# Convert NMEA 0183 powered by micropyGPS
+# Convert .l16 log files exported from SeaPath by H.Otsuka
+#                                              19 Oct 2020
 
-grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
+import sys
+import micropyGPS
+import pandas as pd
+
 #gps = micropyGPS.MicropyGPS(9, 'dd') # JST
 gps = micropyGPS.MicropyGPS(0, 'dd') # UTC
-#346c8ea027f72
+
+l16 = pd.DataFrame(columns=['year','month','day','hour','minute','seconds','lat','lon'], index=[0,1,2,3,4,5])
+sec_cache = 0
 
 def nmearead(sentence):
 
@@ -18,32 +23,60 @@ def nmearead(sentence):
     lon_now, lat_now = gps.longitude[0], gps.latitude[0]
 
     return year, month, day, hour, minute, seconds, lat_now, lon_now
+
+
+def l16read(sentence, l16):
+    year, month, day, hour, minute, seconds, lat_now, lon_now = 0,0,0,0,0,0,0,0
+    token = sentence.split(',')
     
-def l16read(sentence):
+    if token[0] in {'$INZDA'}:
+        l16.loc[0,'year'] = int(token[4][2:])
+        l16.loc[0,'month'] = int(token[3])
+        l16.loc[0,'day'] = int(token[2])
+        timestamp = token[1]
+        l16.loc[0,'hour'] = int(timestamp[0:2])
+        l16.loc[0,'minute'] = int(timestamp[2:4])
+        l16.loc[0,'seconds'] = float(timestamp[4:])
 
-    for x in sentence: # 読んだ文字列を解析してGPSオブジェクトにデーターを追加、更新する
-        gps.update(x)
-    #ToDo
-    # make all features
+    if token[0] in {'$INGGA'}:
+        timestamp = token[1]
+        l16.loc[0,'hour'] = int(timestamp[0:2])
+        l16.loc[0,'minute'] = int(timestamp[2:4])
+        l16.loc[0,'seconds'] = float(timestamp[4:])
+
+        l16.loc[0,'lat'] = float(token[2])
+        l16.loc[0,'lon'] = float(token[4])
+        
+        l16 = l16.shift(1).fillna(0)
+
+    l16.fillna(0,inplace=True)
+    year = l16.loc[1,'year']
+    month = l16.loc[1,'month']
+    day = l16.loc[1,'day']
     
+    hour = l16.loc[1,'hour']
+    minute = l16.loc[1,'minute']
+    seconds = l16.loc[1,'seconds']
+    lat_now = l16.loc[1,'lat']
+    lon_now = l16.loc[1,'lon']
 
-    h = gps.timestamp[0] if gps.timestamp[0] < 24 else gps.timestamp[0] - 24
-    year, month, day = gps.date[2], gps.date[1], gps.date[0]
-    hour, minute, seconds = h, gps.timestamp[1], gps.timestamp[2]
-    lon_now, lat_now = gps.longitude[0], gps.latitude[0]
+    return year, month, day, hour, minute, seconds, lat_now, lon_now, l16
 
-    return year, month, day, hour, minute, seconds, lat_now, lon_now
 
 #MAIN
+year, month, day, hour, minute, seconds, lat_now, lon_now = 0,0,0,0,0,0,0,0
 for line in sys.stdin:
     sentence = line #line.decode('utf-8')
     if sentence[0] != '$': # 先頭が'$'でなければ捨てる
         continue
     if sentence[1] == 'I':
-        print('l16 ',end="")
-        year, month, day, hour, minute, seconds, lat_now, lon_now = l16read(sentence)        
-    if sentence[2] == 'G':
-        year, month, day, hour, minute, seconds, lat_now, lon_now = nmearead(sentence)
+        year, month, day, hour, minute, seconds, lat_now, lon_now, l16 = l16read(sentence, l16)        
+    if sentence[1] == 'G':
+        year, month, day, hour, minute, seconds, lat_now, lon_now = nmearead(sentence)        
 
-    print('20%02d/%02d/%02d %2d:%02d:%04.1f, ' % (year, month, day, hour, minute, seconds),end="")
-    print('%2.8f, %2.8f' % (lat_now, lon_now))
+#    print(l16)
+    if sec_cache != seconds:
+       print('20%02d/%02d/%02d %2d:%02d:%04.1f, ' % (year, month, day, hour, minute, seconds),end="")
+       print('%2.8f, %2.8f' % (lat_now, lon_now))
+
+    sec_cache = seconds
