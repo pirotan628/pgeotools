@@ -5,6 +5,7 @@
 import sys
 import micropyGPS
 import pandas as pd
+from geotools import *
 
 #gps = micropyGPS.MicropyGPS(9, 'dd') # JST
 gps = micropyGPS.MicropyGPS(0, 'dd') # UTC
@@ -27,8 +28,16 @@ def nmearead(sentence):
 
 def l16read(sentence, l16):
     year, month, day, hour, minute, seconds, lat_now, lon_now = 0,0,0,0,0,0,0,0
+    londms = [0]*3
+    latdms = [0]*3
+    sig_lat = 1
+    sig_lon = 1
+
     token = sentence.split(',')
-    
+    for l in range(len(token)):
+        if  len(token[l]) == 0:
+            token[l] = "00000000000000"
+
     if token[0] in {'$INZDA'}:
         l16.loc[0,'year'] = int(token[4][2:])
         l16.loc[0,'month'] = int(token[3])
@@ -44,10 +53,21 @@ def l16read(sentence, l16):
         l16.loc[0,'minute'] = int(timestamp[2:4])
         l16.loc[0,'seconds'] = float(timestamp[4:])
 
-        l16.loc[0,'lat'] = float(token[2])
-        l16.loc[0,'lon'] = float(token[4])
+        if token[3] == "S": sig_lat = -1
+        if token[5] == "W": sig_lon = -1
+
+        latdms[0] = int(token[2][0:2])
+        latdms[1] = float(token[2][2:])
+        londms[0] = int(token[4][0:3])
+        londms[1] = float(token[4][3:])
+        latdms[2] = londms[2] = 0
+
+        l16.loc[0,'lat'] = dms2dec(latdms * sig_lat)
+        l16.loc[0,'lon'] = dms2dec(londms * sig_lon)
         
         l16 = l16.shift(1).fillna(0)
+
+
 
     l16.fillna(0,inplace=True)
     year = l16.loc[1,'year']
