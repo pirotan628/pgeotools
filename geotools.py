@@ -11,6 +11,19 @@ def dms2dec(dms):
     decimal = dms[0] + (dms[1] / 60) + (dms[2] / 3600)
     return decimal
 
+def sec2dec(sec):
+    dms = [0,0,0]
+    dms[0] = 0
+    dms[1] = 0
+    dms[2] = sec
+    decimal = dms2dec(dms)
+    return decimal
+
+def segycoord2(sec):
+    #convert segy coordination for unit "2"
+    decimal = (sec / 3600000)
+    return decimal
+
 def dec2dms(dec):
     d = math.floor(dec)
     m = math.floor((dec - d) * 60)
@@ -34,6 +47,17 @@ def utm2gmt(utm_x, utm_y, utm_zone):
     converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
     lon, lat = converter(utm_x, utm_y, inverse=True)
     return lon, lat
+
+def readsyl(line_in):
+    line = line_in.strip()
+    token = re.split(',',line)
+    sp = int(token[0])
+    s_id = str(token[1])
+    s_day = str(token[2])
+    s_time = str(token[3])
+    lon = float(token[4])
+    lat = float(token[5])
+    return sp, s_id, s_day, s_time, lon, lat
 
 def readxy(line_in):
     line = line_in.strip()
