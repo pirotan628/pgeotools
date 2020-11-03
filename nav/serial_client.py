@@ -81,12 +81,12 @@ while True:
         azm_mag, bkw_azm_mag = azimuth - declination, bkw_azimuth + declination
         nauticalmile = distance / 1852
 
-        print('\033[31m',end="")        
-        print('20%02d/%02d/%02d %2d:%02d:%04.1f' % (year, month, day, hour, minute, seconds))
-        print('%2.8f, %2.8f' % (lat_now, lon_now))
-        print('%03.2f, %03.2f, %.2f, %.2f' % (azimuth, bkw_azimuth, distance, nauticalmile))
-        print('%03.2f, %03.2f' % (azm_mag, bkw_azm_mag), end="")
-        print('\033[0m')
+#        print('\033[31m',end="")        
+        print('* 20%02d/%02d/%02d %2d:%02d:%04.1f' % (year, month, day, hour, minute, seconds))
+        print('* %2.8f, %2.8f' % (lat_now, lon_now))
+        print('* %03.2f, %03.2f, %.2f, %.2f' % (azimuth, bkw_azimuth, distance, nauticalmile))
+        print('* %03.2f, %03.2f' % (azm_mag, bkw_azm_mag), end="")
+#        print('\033[0m')
         
         line=[]
         line.append("20{0:02d}/{1:02d}/{2:02d} {3:02d}:{4:02d}:{5:04.1f}".format(year, month, day, hour, minute, seconds))
