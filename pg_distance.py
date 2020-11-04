@@ -1,3 +1,4 @@
+# discarded. use gmt2dist.
 import pyproj
 
 grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
