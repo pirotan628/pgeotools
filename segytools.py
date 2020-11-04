@@ -58,7 +58,8 @@ class spsfile:
         self.time_hhmmss = time_hhmmss
 
 def read_segy(s1):
-    #commands = []
+#        segy = _read_segy_core(s1.tape[i],unpack_trace_headers=True)
+#        print(segy.__str__(extended=True))
     for i in range(len(s1)):
         command = ["segyread", "tape=" + s1[i].tape, "bfile=" + s1[i].bfile, "hfile=" + s1[i].hfile, "> " + s1[i].sufile]
         args = " ".join(command)
@@ -66,8 +67,6 @@ def read_segy(s1):
         print(args)
         os.system(args)
 
-        #commands.append(command)
-        #res = subprocess.run(commands[i])
     return 0
 
 def sps2geom(spsfile):
@@ -101,8 +100,8 @@ def findxy_from_time(reference, timing, latlon):
 
     return utm_x, utm_y
 
+
 def printsps(sps):
-    
     sys.stdout.write("{0:1s}{1:16s}{2:8d}{3:1d}{4:2d}{5:4d}".format(sps.record_identification,sps.line_name,sps.point_number,sps.point_index,sps.point_code,sps.static_correction))
     sys.stdout.write("{0:4.1f}{1:4d}{2:2d}{3:4.1f}".format(sps.point_depth,sps.seismic_datum,sps.uphole_time,sps.water_depth))
     sys.stdout.write("{0:9.1f}{1:10.1f}{2:6.1f}{3:3d}{4:6s}\n".format(sps.map_grid_easting,sps.map_grid_northing,sps.surface_elvation,sps.day_of_year,sps.time_hhmmss))
@@ -122,25 +121,20 @@ def create_sps_from_descrete(s1, gpsfile):
     gpsdata = gpsdata.sort_index()
 
     for i in range(len(s1)):
-#        segy = _read_segy_core(s1.tape[i],unpack_trace_headers=True)
-#        print(segy.__str__(extended=True))
         sps = []
         segy = _read_segy_segy(s1[i].tape)
         for j in range(len(segy.traces)):
-
-#        for j in range(100):
             tr = segy.traces[j]
             hdr = segy.traces[j].header
             if hdr.trace_number_within_the_original_field_record == 1:
                 strf = " ".join([str(hdr.year_data_recorded),str(hdr.day_of_year),str(hdr.hour_of_day),str(hdr.minute_of_hour),str(hdr.second_of_minute)])
                 timing = datetime.strptime(strf,'%y %j %H %M %S')
-#                print(timing,hdr.original_field_record_number)
                 hms = datetime.strftime(timing,'%H%M%S')
                 utm_x, utm_y = findxy_from_time(gpsdata, timing, latlon=True)
 
                 tmp_sps = spsfile(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
                 tmp_sps.record_identification = "S"
-                tmp_sps.line_name = "OB2002"
+                tmp_sps.line_name = s1[i].basename
                 tmp_sps.point_number = hdr.original_field_record_number
                 tmp_sps.point_index = 1
                 tmp_sps.map_grid_easting = utm_x
@@ -150,10 +144,7 @@ def create_sps_from_descrete(s1, gpsfile):
                 sps.append(tmp_sps)
         for k in range(len(sps)):
             printsps(sps[k])
-#            print(sps[k].record_identification,sps[k].line_name,sps[k].point_number,sps[k].map_grid_easting,sps[k].map_grid_northing,sps[k].day_of_year,sps[k].time_hhmmss)
 
-#        token.append(timing)
-#        print(segy.traces[50].header)
     return 0
 
 def makesufgrp(basename):
