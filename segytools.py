@@ -7,6 +7,7 @@ from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
 from geotools import *
 
+
 WRKHOME = '../'
 
 #PATH_RAW = 'rawdata'
@@ -26,25 +27,10 @@ PFX_HDR = 'hdr_'
 PFX_BIN = 'bin_'
 SFX_ = ''
 
-basename = []
-
-#basename.append('OB2001')
-basename.append('OB2002')
-#basename.append('OB2003')
-#basename.append('OB2004')
-#basename.append('OB2005_1-5440')
-#basename.append('OB2005_5601-7381')
-#basename.append('OB2006_1-2100')
-#basename.append('OB2006_2201-5859')
-
-#tape = []
-#sufile = []
-#header = []
-#binary = []
-
 class Sufgrp:
 # class for su file group
-    def __init__(self, tape, sufile, hfile, bfile):
+    def __init__(self, basename, tape, sufile, hfile, bfile):
+        self.basename = basename
         self.tape = tape
         self.sufile = sufile
         self.hfile = hfile
@@ -71,9 +57,9 @@ class spsfile:
         self.day_of_year = day_of_year
         self.time_hhmmss = time_hhmmss
 
-def read_segy():
+def read_segy(s1):
     #commands = []
-    for i in range(len(basename)):
+    for i in range(len(s1)):
         command = ["segyread", "tape=" + s1[i].tape, "bfile=" + s1[i].bfile, "hfile=" + s1[i].hfile, "> " + s1[i].sufile]
         args = " ".join(command)
 
@@ -88,8 +74,8 @@ def sps2geom(spsfile):
 
     return 0 
 
-def testsu():
-    for i in range(len(basename)):
+def testsu(s1):
+    for i in range(len(s1)):
 
         command = ["sugethw", "key=tracl,fldr,year,day,minute,sec", "< " + s1[i].sufile]
         args = " ".join(command)        
@@ -99,13 +85,11 @@ def testsu():
     return 0
 
 def findxy_from_time(reference, timing, latlon):
-#    print(reference)
-    utm_x = 0
-    utm_y = 0
+    
+    utm_x, utm_y = 0, 0
 
     selected = pd.DataFrame()
     selected = reference.iloc[reference.index.get_loc(timing, method='nearest')]
-#    print(selected)
 
     x = float(selected.loc['lat'])
     y = float(selected.loc['lon'])
@@ -117,7 +101,15 @@ def findxy_from_time(reference, timing, latlon):
 
     return utm_x, utm_y
 
-def create_sps_from_descrete(gpsfile):
+def printsps(sps):
+    
+    sys.stdout.write("{0:1s}{1:16s}{2:8d}{3:1d}{4:2d}{5:4d}".format(sps.record_identification,sps.line_name,sps.point_number,sps.point_index,sps.point_code,sps.static_correction))
+    sys.stdout.write("{0:4.1f}{1:4d}{2:2d}{3:4.1f}".format(sps.point_depth,sps.seismic_datum,sps.uphole_time,sps.water_depth))
+    sys.stdout.write("{0:9.1f}{1:10.1f}{2:6.1f}{3:3d}{4:6s}\n".format(sps.map_grid_easting,sps.map_grid_northing,sps.surface_elvation,sps.day_of_year,sps.time_hhmmss))
+
+    return 0
+
+def create_sps_from_descrete(s1, gpsfile):
     token=[]
 
     gpsdata = pd.DataFrame()
@@ -129,7 +121,7 @@ def create_sps_from_descrete(gpsfile):
     gpsdata = gpsdata.drop_duplicates(['date_time'])
     gpsdata = gpsdata.sort_index()
 
-    for i in range(len(basename)):
+    for i in range(len(s1)):
 #        segy = _read_segy_core(s1.tape[i],unpack_trace_headers=True)
 #        print(segy.__str__(extended=True))
         sps = []
@@ -148,31 +140,30 @@ def create_sps_from_descrete(gpsfile):
 
                 tmp_sps = spsfile(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
                 tmp_sps.record_identification = "S"
-                tmp_sps.line_name = 0
+                tmp_sps.line_name = "OB2002"
                 tmp_sps.point_number = hdr.original_field_record_number
                 tmp_sps.point_index = 1
                 tmp_sps.map_grid_easting = utm_x
                 tmp_sps.map_grid_northing = utm_y
                 tmp_sps.day_of_year = hdr.day_of_year
-                tmp_sps.time_hhmmss = hms
+                tmp_sps.time_hhmmss = str(hms)
                 sps.append(tmp_sps)
         for k in range(len(sps)):
-            print(sps[k].record_identification,sps[k].line_name,sps[k].point_number,sps[k].map_grid_easting,sps[k].map_grid_northing,sps[k].day_of_year,sps[k].time_hhmmss)
+            printsps(sps[k])
+#            print(sps[k].record_identification,sps[k].line_name,sps[k].point_number,sps[k].map_grid_easting,sps[k].map_grid_northing,sps[k].day_of_year,sps[k].time_hhmmss)
 
 #        token.append(timing)
 #        print(segy.traces[50].header)
     return 0
 
-s1 = []
-for i in range(len(basename)):
-   tape = WRKHOME + PATH_RAW + basename[i] + EXT_SGY
-   sufile = WRKHOME + PATH_WRK + basename[i] + EXT_SU
-   hfile = WRKHOME + PATH_HDR + PFX_HDR + basename[i] + EXT_TXT
-   bfile = WRKHOME + PATH_HDR + PFX_BIN + basename[i] + EXT_BIN
-   tmp_strm = Sufgrp(tape,sufile,hfile,bfile)
-   s1.append(tmp_strm)
-   print(s1[i].tape)
-
-#read_segy()
-#testsu()
-create_sps_from_descrete(WRKHOME+PATH_ASC+'202006_gpsdata'+EXT_TXT)
+def makesufgrp(basename):
+    s1 = []
+    for i in range(len(basename)):
+        tape = WRKHOME + PATH_RAW + basename[i] + EXT_SGY
+        sufile = WRKHOME + PATH_WRK + basename[i] + EXT_SU
+        hfile = WRKHOME + PATH_HDR + PFX_HDR + basename[i] + EXT_TXT
+        bfile = WRKHOME + PATH_HDR + PFX_BIN + basename[i] + EXT_BIN
+        tmp_strm = Sufgrp(basename[i], tape, sufile, hfile, bfile)
+        s1.append(tmp_strm)
+#       print(s1[i].tape)
+    return s1
