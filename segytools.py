@@ -1,6 +1,7 @@
 #import subprocess
 #import sys
 import pandas as pd
+from datetime import datetime
 import os
 from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
@@ -58,32 +59,54 @@ def sps2geom(spsfile):
 
     return 0 
 
-def create_sps_from_descrete(gpsfile):
-    token=[]
-    gpsdata = pd.DataFrame()
-#    pd.read_csv(gpsfile,sep=",",names=['timing','lat','lon'],dtype={'timing':pd.datetime,'lat':float,'lon':float})
-    pd.read_csv(gpsfile,sep=",",names=['timing','lat','lon'],dtype=object, header=None)
+def testsu():
     for i in range(len(basename)):
-#        segy = _read_segy_core(tape[i],unpack_trace_headers=True)
-        segy = _read_segy_segy(tape[i])
-#        print(segy.__str__(extended=True))
-        tr = segy.traces[0]
-        hdr = segy.traces[0].header
-#        keys=tr.stats.keys
-#        print(keys('original_field_record_number'))
-       
-        token.append(hdr.original_field_record_number)
-        token.append(hdr.year_data_recorded)
-        token.append(hdr.day_of_year)
-        token.append(hdr.hour_of_day)
-        token.append(hdr.minute_of_hour)
-        token.append(hdr.second_of_minute)
-        print(token)
 
         command = ["sugethw", "key=tracl,fldr,year,day,minute,sec", "< " + sufile[i]]
         args = " ".join(command)        
         print(args)
 #        os.system(args)
+
+    return 0
+
+def create_sps_from_descrete(gpsfile):
+    token=[]
+    gpsdata = pd.DataFrame()
+    gpsdata = pd.read_csv(gpsfile,sep=",",names=['date_time','lat','lon'],dtype=object, header=None)
+    for i in range(len(basename)):
+#        segy = _read_segy_core(tape[i],unpack_trace_headers=True)
+#        print(segy.__str__(extended=True))
+
+        segy = _read_segy_segy(tape[i])
+        for j in range(len(segy.traces)):
+#        for j in range(100):
+            tr = segy.traces[j]
+            hdr = segy.traces[j].header
+            if hdr.trace_number_within_the_original_field_record == 1:
+                strf = " ".join([str(hdr.year_data_recorded),str(hdr.day_of_year),str(hdr.hour_of_day),str(hdr.minute_of_hour),str(hdr.second_of_minute)])
+                timing = datetime.strptime(strf,'%y %j %H %M %S')
+                print(timing,hdr.original_field_record_number)
+                hms = datetime.strftime(timing,'%H%M%S')
+        
+        token.append(timing)
+        token.append("S")
+        token.append(0)
+        token.append(0)
+        token.append(1)
+        token.append(0)
+        token.append(0)
+        token.append(0)
+        token.append(0)
+        token.append(0)
+        token.append(0)
+        token.append("lon")
+        token.append("lat")
+        token.append(0)
+        token.append(hdr.day_of_year)
+        token.append(hms)
+
+        print(token)
+        print(segy.traces[50].header)
     return 0
 
 
@@ -94,4 +117,5 @@ for i in range(len(basename)):
    binary.append(WRKHOME + PATH_HDR + PFX_BIN + basename[i] + EXT_BIN)
 
 #read_segy()
+#testsu()
 create_sps_from_descrete(WRKHOME+PATH_ASC+'202006_gpsdata'+EXT_TXT)
