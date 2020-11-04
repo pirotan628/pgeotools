@@ -7,7 +7,6 @@ from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
 from geotools import *
 
-
 WRKHOME = '../'
 
 #PATH_RAW = 'rawdata'
@@ -57,9 +56,19 @@ class spsfile:
         self.day_of_year = day_of_year
         self.time_hhmmss = time_hhmmss
 
+class ship_configuration:
+    def __init__(self, gps_to_source_stern, gps_to_source_right, gps_to_receiver_stern, gps_to_receiver_right):
+        self.gps_to_source_stern = gps_to_source_stern
+        self.gps_to_source_port = gps_to_source_right
+        self.gps_to_receiver_stern = gps_to_receiver_stern
+        self.gps_to_receiver_star = gps_to_receiver_right
+
 def read_segy(s1):
 #        segy = _read_segy_core(s1.tape[i],unpack_trace_headers=True)
 #        print(segy.__str__(extended=True))
+    return 0
+
+def su_segyread(s1):
     for i in range(len(s1)):
         command = ["segyread", "tape=" + s1[i].tape, "bfile=" + s1[i].bfile, "hfile=" + s1[i].hfile, "> " + s1[i].sufile]
         args = " ".join(command)
@@ -69,7 +78,7 @@ def read_segy(s1):
 
     return 0
 
-def sps2geom(spsfile):
+def sps2sugeom(spsfile, config):
 
     return 0 
 
@@ -94,7 +103,7 @@ def findxy_from_time(reference, timing, latlon):
     y = float(selected.loc['lon'])
     
     if latlon == True:
-        utm_x, utm_y = gmt2utm(y, x, +53)
+        utm_x, utm_y = gmt2utm(y, x, PROJECT_UTM)
     else:
         utm_x, utm_y = x, y
 

@@ -6,6 +6,7 @@ from pygc import *
 import re
 
 nmile = 1852
+PROJECT_UTM = +53
 
 def dms2dec(dms):
     decimal = dms[0] + (dms[1] / 60) + (dms[2] / 3600)
