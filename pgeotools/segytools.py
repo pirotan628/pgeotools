@@ -9,8 +9,8 @@ from pgeotools import geotools
 
 WRKHOME = '../'
 
-#PATH_RAW = 'rawdata'
-PATH_RAW = '../202006_Onokoro/'
+PATH_RAW = 'rawdata/'
+#PATH_RAW = '../202006_Onokoro/'
 PATH_HDR = 'headers/'
 PATH_ASC = 'ascdata/'
 PATH_WRK = 'working/'
