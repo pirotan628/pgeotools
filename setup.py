@@ -18,5 +18,5 @@ setup(
     install_requires=read_requirements(),
     url='https://github.com/pirotan628/geotools',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs','cmdtools','nav','sidetools'))
+    packages=find_packages(exclude=('tests', 'docs','cmdtools','nav'))
 )
