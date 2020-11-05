@@ -1,6 +1,12 @@
 import os, sys
 from setuptools import setup, find_packages
 
+with open('README.md') as f:
+    readme = f.read()
+
+with open('LICENSE') as f:
+    license = f.read()
+
 def read_requirements():
     """Parse requirements from requirements.txt."""
     reqs_path = os.path.join('.', 'requirements.txt')
@@ -18,5 +24,5 @@ setup(
     install_requires=read_requirements(),
     url='https://github.com/pirotan628/geotools',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs','cmdtools','nav'))
+    packages=find_packages(exclude=('tests', 'docs','cmdtools'))
 )
