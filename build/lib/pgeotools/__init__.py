@@ -1,2 +1,2 @@
-from pgeotools.geotools import *
-from pgeotools.segytools import *
+from .geotools import *
+from .segytools import *

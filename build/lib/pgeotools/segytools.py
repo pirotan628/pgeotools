@@ -1,10 +1,10 @@
-#import sys
+import sys
 import os
 import pandas as pd
 from datetime import datetime
 from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
-from geotools import *
+from pgeotools import geotools
 #import subprocess
 
 WRKHOME = '../'
@@ -103,7 +103,7 @@ def findxy_from_time(reference, timing, latlon):
     y = float(selected.loc['lon'])
     
     if latlon == True:
-        utm_x, utm_y = gmt2utm(y, x, PROJECT_UTM)
+        utm_x, utm_y = geotools.gmt2utm(y, x, geotools.PROJECT_UTM)
     else:
         utm_x, utm_y = x, y
 
