@@ -1,9 +1,9 @@
 import sys
 import math
+import re
 from pyproj import Proj
 from pygc import *
 #from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
-import re
 
 nmile = 1852
 PROJECT_UTM = +53

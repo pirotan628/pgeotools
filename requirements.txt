@@ -1,0 +1,8 @@
+# pypi
+numpy
+pandas
+obspy
+pyproj
+pygc
+#git://git@github.com/foo/foo.git
+#git+ssh://git@github.com/foo/foo.git
