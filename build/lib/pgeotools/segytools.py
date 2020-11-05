@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
-from pgeotools.geotools import geotools
+from geotools import *
 #import subprocess
 
 WRKHOME = '../'
