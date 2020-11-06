@@ -1,12 +1,15 @@
 import sys
-from geotools import *
-from segytools import *
+import datetime
+#from geotools import *
+#from segytools import *
+import pgeotools as pg
+from pgeotools import segytools as psg
 
-tmp_sps = spsfile(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+tmp_sps = psg.spsfile(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
 for line in sys.stdin:
-    sp, s_id, s_day, s_time, lon, lat = readsyl(line)
-    utm_x, utm_y = gmt2utm(lon, lat, +53)
+    sp, s_id, s_day, s_time, lon, lat = pg.readsyl(line)
+    utm_x, utm_y = pg.gmt2utm(lon, lat, +53)
     dayofyear = datetime.strftime(datetime.strptime(s_day.strip(), '%Y/%m/%d'), '%j')
     hms = datetime.strftime(datetime.strptime(s_time.strip(),'%H:%M:%S.%f'),'%H%M%S')
 
@@ -30,4 +33,4 @@ for line in sys.stdin:
     tmp_sps.day_of_year = int(dayofyear)
     tmp_sps.time_hhmmss = str(hms)
 
-    printsps(tmp_sps)
+    psg.printsps(tmp_sps)

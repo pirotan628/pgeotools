@@ -1,7 +1,8 @@
 import sys
-from geotools import *
+#from geotools import *
+import pgeotools as pg
 
 for line in sys.stdin:
-    x, y = readxy(line)
-    lon, lat = segycoord2(x), segycoord2(y)
+    x, y = pg.readxy(line)
+    lon, lat = pg.segycoord2(x), pg.segycoord2(y)
     sys.stdout.write("{0} {1}\n".format(lon, lat))

@@ -1,5 +1,6 @@
-#from pygc import *
-from geotools import *
+from pygc import *
+#from geotools import *
+#import pgeotools as pg
 
 nmile = 1852
 

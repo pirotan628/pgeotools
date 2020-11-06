@@ -5,7 +5,8 @@
 import sys
 import micropyGPS
 import pandas as pd
-from geotools import *
+#from geotools import *
+import pgeotools as pg
 
 #gps = micropyGPS.MicropyGPS(9, 'dd') # JST
 gps = micropyGPS.MicropyGPS(0, 'dd') # UTC
@@ -62,8 +63,8 @@ def l16read(sentence, l16):
         londms[1] = float(token[4][3:])
         latdms[2] = londms[2] = 0
 
-        l16.loc[0,'lat'] = dms2dec(latdms * sig_lat)
-        l16.loc[0,'lon'] = dms2dec(londms * sig_lon)
+        l16.loc[0,'lat'] = pg.dms2dec(latdms * sig_lat)
+        l16.loc[0,'lon'] = pg.dms2dec(londms * sig_lon)
         
         l16 = l16.shift(1).fillna(0)
 
