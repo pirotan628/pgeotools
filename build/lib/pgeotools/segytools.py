@@ -118,7 +118,6 @@ def printsps(sps):
     return 0
 
 def create_sps_from_descrete(s1, gpsfile):
-    token=[]
 
     gpsdata = pd.DataFrame()
     gpsdata = pd.read_csv(gpsfile,sep=",",names=['date_time','lat','lon'],\
@@ -133,7 +132,7 @@ def create_sps_from_descrete(s1, gpsfile):
         sps = []
         segy = _read_segy_segy(s1[i].tape)
         for j in range(len(segy.traces)):
-            tr = segy.traces[j]
+#            tr = segy.traces[j]
             hdr = segy.traces[j].header
             if hdr.trace_number_within_the_original_field_record == 1:
                 strf = " ".join([str(hdr.year_data_recorded),str(hdr.day_of_year),str(hdr.hour_of_day),str(hdr.minute_of_hour),str(hdr.second_of_minute)])
@@ -151,10 +150,36 @@ def create_sps_from_descrete(s1, gpsfile):
                 tmp_sps.day_of_year = hdr.day_of_year
                 tmp_sps.time_hhmmss = str(hms)
                 sps.append(tmp_sps)
-        for k in range(len(sps)):
-            printsps(sps[k])
+#        for k in range(len(sps)):
+#            printsps(sps[k])
+    return sps
 
-    return 0
+def create_utmxy_from_hdrtime(s1, gpsfile):
+
+    gpsdata = pd.DataFrame()
+    gpsdata = pd.read_csv(gpsfile,sep=",",names=['date_time','lat','lon'],\
+                                       parse_dates=True, header=None)
+
+    gpsdata['date_time'] = pd.to_datetime(gpsdata['date_time'])
+    gpsdata.set_index(gpsdata['date_time'],drop=True, inplace=True)
+    gpsdata = gpsdata.drop_duplicates(['date_time'])
+    gpsdata = gpsdata.sort_index()
+
+    for i in range(len(s1)):
+        coordination = []
+        segy = _read_segy_segy(s1[i].tape)
+        for j in range(len(segy.traces)):
+#            tr = segy.traces[j]
+            hdr = segy.traces[j].header
+#            if hdr.trace_number_within_the_original_field_record == 1:
+            strf = " ".join([str(hdr.year_data_recorded),str(hdr.day_of_year),str(hdr.hour_of_day),str(hdr.minute_of_hour),str(hdr.second_of_minute)])
+            timing = datetime.strptime(strf,'%y %j %H %M %S')
+            #print(timing)
+#            hms = datetime.strftime(timing,'%H%M%S')
+            utm_x, utm_y = findxy_from_time(gpsdata, timing, latlon=True)
+            utm_xy = [utm_x, utm_y]
+            coordination.append(utm_xy)
+    return coordination
 
 def makesufgrp(basename):
     s1 = []
