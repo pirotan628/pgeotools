@@ -178,7 +178,7 @@ def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
             timing = datetime.strptime(strf,'%y %j %H %M %S')
             #print(timing)
 #            hms = datetime.strftime(timing,'%H%M%S')
-            utm_x, utm_y = findxy_from_time(gpsdata, timing, latlon=True, utmzone)
+            utm_x, utm_y = findxy_from_time(gpsdata, timing, True, utmzone)
             utm_xy = [utm_x, utm_y]
             coordination.append(utm_xy)
     return coordination
