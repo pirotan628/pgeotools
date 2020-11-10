@@ -165,4 +165,4 @@ def make_mesh_line(lon0, lat0, azm, dist, itr):
         iarray.append(xy_i)
         xarray.append(xy_x)
 
-    return xyarray
+    return iarray, xarray

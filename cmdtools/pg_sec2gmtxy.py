@@ -1,5 +1,4 @@
 import sys
-#from geotools import *
 import pgeotools as pg
 
 for line in sys.stdin:

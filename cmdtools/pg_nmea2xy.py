@@ -5,7 +5,6 @@
 import sys
 import micropyGPS
 import pandas as pd
-#from geotools import *
 import pgeotools as pg
 
 #gps = micropyGPS.MicropyGPS(9, 'dd') # JST

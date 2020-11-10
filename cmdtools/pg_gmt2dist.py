@@ -1,6 +1,5 @@
 import sys
 import pyproj
-#from geotools import *
 
 grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
 

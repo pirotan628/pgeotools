@@ -1,7 +1,5 @@
 import sys
 from datetime import datetime
-#from geotools import *
-#from segytools import *
 import pgeotools as pg
 from pgeotools import segytools as psg
 
