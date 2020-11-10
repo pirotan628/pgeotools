@@ -2,12 +2,14 @@ import sys
 from datetime import datetime
 import pgeotools as pg
 from pgeotools import segytools as psg
+from pg_param import *
 
+utmzone = PROJECT_UTM
 tmp_sps = psg.spsfile(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
 for line in sys.stdin:
     sp, s_id, s_day, s_time, lon, lat = pg.readsyl(line)
-    utm_x, utm_y = pg.gmt2utm(lon, lat, +53)
+    utm_x, utm_y = pg.gmt2utm(lon, lat, utmzone)
     dayofyear = datetime.strftime(datetime.strptime(s_day.strip(), '%Y/%m/%d'), '%j')
     hms = datetime.strftime(datetime.strptime(s_time.strip(),'%H:%M:%S.%f'),'%H%M%S')
 

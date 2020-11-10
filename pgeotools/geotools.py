@@ -3,10 +3,8 @@ import math
 import re
 from pyproj import Proj
 from pygc import *
+from pgeotools import param_config as pconf
 #from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
-
-nmile = 1852
-PROJECT_UTM = +53
 
 def dms2dec(dms):
     decimal = dms[0] + (dms[1] / 60) + (dms[2] / 3600)

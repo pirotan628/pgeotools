@@ -5,26 +5,6 @@ from datetime import datetime
 from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
 from pgeotools import geotools
-#from pgeotools import param_config
-
-WRKHOME = '../'
-
-PATH_RAW = 'rawdata/'
-#PATH_RAW = '../202006_Onokoro/'
-PATH_HDR = 'headers/'
-PATH_ASC = 'ascdata/'
-PATH_WRK = 'working/'
-PATH_PRC = 'processed/'
-
-EXT_SGY = '.sgy'
-EXT_SU = '.su'
-EXT_TXT = '.txt'
-EXT_BIN = '.bin'
-EXT_SPS = '.sps'
-
-PFX_HDR = 'hdr_'
-PFX_BIN = 'bin_'
-SFX_ = ''
 
 class config_file:
     def __init__(self,WRKHOME,PATH_RAW,PATH_HDR,PATH_ASC,PATH_WRK,PATH_PRC, \

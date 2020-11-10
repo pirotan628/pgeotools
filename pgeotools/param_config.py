@@ -19,3 +19,6 @@ config_file_default.EXT_SPS = '.sps'
 config_file_default.PFX_HDR = 'hdr_'
 config_file_default.PFX_BIN = 'bin_'
 config_file_default.SFX_ = ''
+
+NMILE = 1852
+PROJECT_UTM = +53
