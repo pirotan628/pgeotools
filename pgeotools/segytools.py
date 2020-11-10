@@ -5,6 +5,7 @@ from datetime import datetime
 from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
 from pgeotools import geotools
+from pgeotools import param_config as pconf
 
 class config_file:
     def __init__(self,WRKHOME,PATH_RAW,PATH_HDR,PATH_ASC,PATH_WRK,PATH_PRC, \
@@ -93,7 +94,7 @@ def testsu(s1):
 
     return 0
 
-def findxy_from_time(reference, timing, latlon):
+def findxy_from_time(reference, timing, latlon, utmzone):
     
     utm_x, utm_y = 0, 0
 
@@ -104,7 +105,7 @@ def findxy_from_time(reference, timing, latlon):
     y = float(selected.loc['lon'])
     
     if latlon == True:
-        utm_x, utm_y = geotools.gmt2utm(y, x, geotools.PROJECT_UTM)
+        utm_x, utm_y = geotools.gmt2utm(y, x, utmzone)
     else:
         utm_x, utm_y = x, y
 
@@ -155,7 +156,7 @@ def create_sps_from_descrete(s1, gpsfile):
 #            printsps(sps[k])
     return sps
 
-def create_utmxy_from_hdrtime(s1, gpsfile):
+def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
 
     gpsdata = pd.DataFrame()
     gpsdata = pd.read_csv(gpsfile,sep=",",names=['date_time','lat','lon'],\
@@ -177,7 +178,7 @@ def create_utmxy_from_hdrtime(s1, gpsfile):
             timing = datetime.strptime(strf,'%y %j %H %M %S')
             #print(timing)
 #            hms = datetime.strftime(timing,'%H%M%S')
-            utm_x, utm_y = findxy_from_time(gpsdata, timing, latlon=True)
+            utm_x, utm_y = findxy_from_time(gpsdata, timing, latlon=True, utmzone)
             utm_xy = [utm_x, utm_y]
             coordination.append(utm_xy)
     return coordination

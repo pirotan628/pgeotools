@@ -5,26 +5,27 @@ from datetime import datetime
 from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
 from pgeotools import geotools
-#import subprocess
 
-WRKHOME = '../'
-
-PATH_RAW = 'rawdata/'
-#PATH_RAW = '../202006_Onokoro/'
-PATH_HDR = 'headers/'
-PATH_ASC = 'ascdata/'
-PATH_WRK = 'working/'
-PATH_PRC = 'processed/'
-
-EXT_SGY = '.sgy'
-EXT_SU = '.su'
-EXT_TXT = '.txt'
-EXT_BIN = '.bin'
-EXT_SPS = '.sps'
-
-PFX_HDR = 'hdr_'
-PFX_BIN = 'bin_'
-SFX_ = ''
+class config_file:
+    def __init__(self,WRKHOME,PATH_RAW,PATH_HDR,PATH_ASC,PATH_WRK,PATH_PRC, \
+                EXT_SGY,EXT_SU,EXT_TXT,EXT_BIN,EXT_SPS,EXT_RPS,EXT_XPS, \
+                PFX_HDR,PFX_BIN,SFX_):
+        self.WRKHOME = WRKHOME
+        self.PATH_RAW = PATH_RAW
+        self.PATH_HDR = PATH_HDR
+        self.PATH_ASC = PATH_ASC
+        self.PATH_WRK = PATH_WRK
+        self.PATH_PRC = PATH_PRC
+        self.EXT_SGY = EXT_SGY
+        self.EXT_SU = EXT_SU
+        self.EXT_TXT = EXT_TXT
+        self.EXT_BIN = EXT_BIN
+        self.EXT_SPS = EXT_SPS
+        self.EXT_RPS = EXT_RPS
+        self.EXT_XPS = EXT_XPS
+        self.PFX_HDR = PFX_HDR
+        self.PFX_BIN = PFX_BIN
+        self.SFX_ = SFX_        
 
 class Sufgrp:
 # class for su file group
@@ -181,13 +182,13 @@ def create_utmxy_from_hdrtime(s1, gpsfile):
             coordination.append(utm_xy)
     return coordination
 
-def makesufgrp(basename):
+def makesufgrp(basename, conf_f):
     s1 = []
     for i in range(len(basename)):
-        tape = WRKHOME + PATH_RAW + basename[i] + EXT_SGY
-        sufile = WRKHOME + PATH_WRK + basename[i] + EXT_SU
-        hfile = WRKHOME + PATH_HDR + PFX_HDR + basename[i] + EXT_TXT
-        bfile = WRKHOME + PATH_HDR + PFX_BIN + basename[i] + EXT_BIN
+        tape = conf_f.WRKHOME + conf_f.PATH_RAW + basename[i] + conf_f.EXT_SGY
+        sufile = conf_f.WRKHOME + conf_f.PATH_WRK + basename[i] + conf_f.EXT_SU
+        hfile = conf_f.WRKHOME + conf_f.PATH_HDR + conf_f.PFX_HDR + basename[i] + conf_f.EXT_TXT
+        bfile = conf_f.WRKHOME + conf_f.PATH_HDR + conf_f.PFX_BIN + basename[i] + conf_f.EXT_BIN
         tmp_strm = Sufgrp(basename[i], tape, sufile, hfile, bfile)
         s1.append(tmp_strm)
 #       print(s1[i].tape)

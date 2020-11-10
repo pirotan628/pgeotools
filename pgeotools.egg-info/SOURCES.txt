@@ -4,6 +4,7 @@ README.md
 setup.py
 pgeotools/__init__.py
 pgeotools/geotools.py
+pgeotools/param_config.py
 pgeotools/segytools.py
 pgeotools.egg-info/PKG-INFO
 pgeotools.egg-info/SOURCES.txt
