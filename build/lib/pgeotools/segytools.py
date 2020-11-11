@@ -119,7 +119,7 @@ def printsps(sps):
 
     return 0
 
-def create_sps_from_descrete(s1, gpsfile):
+def create_sps_from_descrete(s1, gpsfile, utmzone):
 
     gpsdata = pd.DataFrame()
     gpsdata = pd.read_csv(gpsfile,sep=",",names=['date_time','lat','lon'],\
@@ -140,7 +140,7 @@ def create_sps_from_descrete(s1, gpsfile):
                 strf = " ".join([str(hdr.year_data_recorded),str(hdr.day_of_year),str(hdr.hour_of_day),str(hdr.minute_of_hour),str(hdr.second_of_minute)])
                 timing = datetime.strptime(strf,'%y %j %H %M %S')
                 hms = datetime.strftime(timing,'%H%M%S')
-                utm_x, utm_y = findxy_from_time(gpsdata, timing, latlon=True)
+                utm_x, utm_y = findxy_from_time(gpsdata, timing, True, utmzone)
 
                 tmp_sps = spsfile(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
                 tmp_sps.record_identification = "S"
@@ -178,7 +178,7 @@ def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
             timing = datetime.strptime(strf,'%y %j %H %M %S')
             #print(timing)
 #            hms = datetime.strftime(timing,'%H%M%S')
-            utm_x, utm_y = findxy_from_time(gpsdata, timing, latlon=True, utmzone)
+            utm_x, utm_y = findxy_from_time(gpsdata, timing, True, utmzone)
             utm_xy = [utm_x, utm_y]
             coordination.append(utm_xy)
     return coordination
