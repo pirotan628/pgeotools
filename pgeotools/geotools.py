@@ -1,10 +1,24 @@
+# geotools for python, for personal work 
+# powered by pyproj, pygc
+#                         H. Otsuka 2019
+
 import sys
 import math
 import re
 from pyproj import Proj
 from pygc import *
-from pgeotools import param_config as pconf
+
 #from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
+
+def rot_xy(x, y, deg):
+    rad = math.radians(deg)
+    sin_rad = math.sin(rad)
+    cos_rad = math.cos(rad)
+
+    rot_x = x * cos_rad - y * sin_rad
+    rot_y = x * sin_rad + y * cos_rad
+
+    return rot_x, rot_y
 
 def dms2dec(dms):
     decimal = dms[0] + (dms[1] / 60) + (dms[2] / 3600)

@@ -1,9 +1,14 @@
+# segytools for python, for personal work
+# powered by obspy, pyproj
+#                           H.Otsuka 2020
+
 import sys
 import os
 import pandas as pd
 from datetime import datetime
 from obspy.io.segy.core import _read_segy as _read_segy_core
 from obspy.io.segy.segy import _read_segy as _read_segy_segy
+import pyproj
 from pgeotools import geotools
 from pgeotools import param_config as pconf
 
@@ -61,9 +66,9 @@ class spsfile:
 class ship_configuration:
     def __init__(self, gps_to_source_stern, gps_to_source_right, gps_to_receiver_stern, gps_to_receiver_right):
         self.gps_to_source_stern = gps_to_source_stern
-        self.gps_to_source_port = gps_to_source_right
+        self.gps_to_source_right = gps_to_source_right
         self.gps_to_receiver_stern = gps_to_receiver_stern
-        self.gps_to_receiver_star = gps_to_receiver_right
+        self.gps_to_receiver_right = gps_to_receiver_right
 
 def read_segy(s1):
 #        segy = _read_segy_core(s1.tape[i],unpack_trace_headers=True)
@@ -194,3 +199,28 @@ def makesufgrp(basename, conf_f):
         s1.append(tmp_strm)
 #       print(s1[i].tape)
     return s1
+
+def calc_geom_from_ship_conf(ship_conf, gps_pos, utm_zone):
+    grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
+    sx, sy, gx, gy= 0, 0, 0, 0
+    lon0, lat0 = gps_pos[0,0], gps_pos[0,1]
+#    x0, y0 = geotools.gmt2utm(lon0, lat0)
+    for itr in range(1,len(gps_pos) - 1):
+        lon1, lat1 = gps_pos[itr,0], gps_pos[itr,1]
+        x1, y1 = geotools.gmt2utm(lon1, lat1, utm_zone)
+        azimuth, bkw_azimuth, distance = grs80.inv(lon0, lat0, lon1, lat1)
+        deg = -1 * azimuth
+        sx0 = ship_conf.gps_to_source_right
+        sy0 = -1 * ship_conf.gps_to_source_stern
+        gx0 = ship_conf.gps_to_receiver_right
+        gy0 = -1 * ship_conf.gps_to_receiver_stern
+        rot_sx0, rot_sy0 = geotools.rot_xy(sx0, sy0, deg)
+        rot_gx0, rot_gy0 = geotools.rot_xy(gx0, gy0, deg)
+        sx = x1 + rot_sx0
+        sy = y1 + rot_sy0
+        gx = x1 + rot_gx0
+        gy = y1 + rot_gy0
+#        sx = gps_pos[itr,0] + ship_conf.gps_to_source_stern
+#        sy = gps_pos[itr,1] + ship_conf.gps_to_source_right
+        lon0, lat0 = lon1, lat1
+    return sx,sy,gx,gy,azimuth
