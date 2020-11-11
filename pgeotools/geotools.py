@@ -2,9 +2,7 @@
 # powered by pyproj, pygc
 #                         H. Otsuka 2019
 
-import sys
-import math
-import re
+import sys, math, re
 from pyproj import Proj
 from pygc import *
 

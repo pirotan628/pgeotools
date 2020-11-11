@@ -2,8 +2,7 @@
 # powered by obspy, pyproj
 #                           H.Otsuka 2020
 
-import sys
-import os
+import sys, os
 import pandas as pd
 from datetime import datetime
 from obspy.io.segy.core import _read_segy as _read_segy_core
@@ -202,25 +201,40 @@ def makesufgrp(basename, conf_f):
 
 def calc_geom_from_ship_conf(ship_conf, gps_pos, utm_zone):
     grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
+    coord = []
+    coords = []
     sx, sy, gx, gy= 0, 0, 0, 0
+
     lon0, lat0 = gps_pos[0,0], gps_pos[0,1]
-#    x0, y0 = geotools.gmt2utm(lon0, lat0)
+    x0, y0 = geotools.gmt2utm(lon0, lat0)
+
+    sx0 = ship_conf.gps_to_source_right
+    sy0 = -1 * ship_conf.gps_to_source_stern
+    gx0 = ship_conf.gps_to_receiver_right
+    gy0 = -1 * ship_conf.gps_to_receiver_stern
+
     for itr in range(1,len(gps_pos) - 1):
         lon1, lat1 = gps_pos[itr,0], gps_pos[itr,1]
         x1, y1 = geotools.gmt2utm(lon1, lat1, utm_zone)
         azimuth, bkw_azimuth, distance = grs80.inv(lon0, lat0, lon1, lat1)
         deg = -1 * azimuth
-        sx0 = ship_conf.gps_to_source_right
-        sy0 = -1 * ship_conf.gps_to_source_stern
-        gx0 = ship_conf.gps_to_receiver_right
-        gy0 = -1 * ship_conf.gps_to_receiver_stern
         rot_sx0, rot_sy0 = geotools.rot_xy(sx0, sy0, deg)
         rot_gx0, rot_gy0 = geotools.rot_xy(gx0, gy0, deg)
-        sx = x1 + rot_sx0
-        sy = y1 + rot_sy0
-        gx = x1 + rot_gx0
-        gy = y1 + rot_gy0
+        sx = x0 + rot_sx0
+        sy = y0 + rot_sy0
+        gx = x0 + rot_gx0
+        gy = y0 + rot_gy0
 #        sx = gps_pos[itr,0] + ship_conf.gps_to_source_stern
 #        sy = gps_pos[itr,1] + ship_conf.gps_to_source_right
+        coord = [sx,sy,gx,gy,azimuth]
+        coords.append(coord)
         lon0, lat0 = lon1, lat1
-    return sx,sy,gx,gy,azimuth
+
+    sx = x1 + rot_sx0
+    sy = y1 + rot_sy0
+    gx = x1 + rot_gx0
+    gy = y1 + rot_gy0
+    coord = [sx,sy,gx,gy,azimuth]
+    coords.append(coord)
+    
+    return coords

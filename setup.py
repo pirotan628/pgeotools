@@ -22,7 +22,7 @@ setup(
     author='Hironori Otsuka',
     author_email='hotsuka@eri.u-tokyo.ac.jp',
     install_requires=read_requirements(),
-    url='https://github.com/pirotan628/geotools',
+    url='https://github.com/pirotan628/pgeotools',
     license=license,
     packages=find_packages(exclude=('tests', 'docs','cmdtools'))
 )
