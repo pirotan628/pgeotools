@@ -173,7 +173,7 @@ def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
 
     for i in range(len(s1)):
         coordination = []
-        append = coodination.append
+        append = coordination.append
         segy = _read_segy_segy(s1[i].tape)
         for j in range(len(segy.traces)):
 #            tr = segy.traces[j]
