@@ -173,6 +173,7 @@ def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
 
     for i in range(len(s1)):
         coordination = []
+        append = coodination.append
         segy = _read_segy_segy(s1[i].tape)
         for j in range(len(segy.traces)):
 #            tr = segy.traces[j]
@@ -183,8 +184,8 @@ def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
             #print(timing)
 #            hms = datetime.strftime(timing,'%H%M%S')
             utm_x, utm_y = findxy_from_time(gpsdata, timing, True, utmzone)
-            utm_xy = [utm_x, utm_y]
-            coordination.append(utm_xy)
+            utm_xyt = [utm_x, utm_y, timing]
+            append(utm_xyt)
     return coordination
 
 def makesufgrp(basename, conf_f):
@@ -199,7 +200,7 @@ def makesufgrp(basename, conf_f):
 #       print(s1[i].tape)
     return s1
 
-def calc_geom_from_ship_conf(ship_conf, gps_pos, utm_zone):
+def calc_geom_from_ship_conf(ship_conf, gps_pos, utm_zone, latlon):
     grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
     coord = []
     coords = []
@@ -208,7 +209,10 @@ def calc_geom_from_ship_conf(ship_conf, gps_pos, utm_zone):
     sx, sy, gx, gy= 0, 0, 0, 0
 
     lon0, lat0 = gps_pos[0][0], gps_pos[0][1]
-    x0, y0 = geotools.gmt2utm(lon0, lat0, utm_zone)
+    if latlon == True:
+        x0, y0 = geotools.gmt2utm(lon0, lat0, utm_zone)
+    else:
+        x0, y0 = lon0, lat0
 
     sx0 = ship_conf.gps_to_source_right
     sy0 = -1 * ship_conf.gps_to_source_stern
@@ -217,8 +221,13 @@ def calc_geom_from_ship_conf(ship_conf, gps_pos, utm_zone):
 
     for itr in range(1,len(gps_pos) - 1):
         lon1, lat1 = gps_pos[itr][0], gps_pos[itr][1]
-        x0, y0 = geotools.gmt2utm(lon0, lat0, utm_zone)
-        x1, y1 = geotools.gmt2utm(lon1, lat1, utm_zone)
+        if latlon == True:
+            x0, y0 = geotools.gmt2utm(lon0, lat0, utm_zone)
+            x1, y1 = geotools.gmt2utm(lon1, lat1, utm_zone)
+        else:
+            x0, y0 = lon0, lat0
+            x1, y1 = lon1, lat1
+
         azimuth, bkw_azimuth, distance = grs80.inv(lon0, lat0, lon1, lat1)
         deg = -1 * azimuth
         rot_sx0, rot_sy0 = geotools.rot_xy(sx0, sy0, deg)
