@@ -7,7 +7,8 @@ lines = sys.stdin
 
 gps_pos = []
 for l in lines:
-    lon,lat = pg.readxy(l)
+    x,y = pg.readxy(l)
+    lon, lat = pg.utm2gmt(x,y,utm_zone)
     pos = [lon, lat]
     gps_pos.append(pos)
 
