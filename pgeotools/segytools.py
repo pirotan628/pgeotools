@@ -192,9 +192,7 @@ def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
 def create_geometry_from_hdrtime(s1, gpsfile, ship_conf, utmzone):
     grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
     coord = []
-#    coords = []
-#    append = coords.append
-
+    
     sx, sy, gx, gy= 0, 0, 0, 0
 
     sx0 = ship_conf.gps_to_source_right
@@ -232,16 +230,8 @@ def create_geometry_from_hdrtime(s1, gpsfile, ship_conf, utmzone):
             x1 = utm_x
             y1 = utm_y
 
-#    for itr in range(1,len(gps_pos) - 1):
-#        lon1, lat1 = gps_pos[itr][0], gps_pos[itr][1]
-#        if latlon == True:
-#            x0, y0 = geotools.gmt2utm(lon0, lat0, utm_zone)
-#            x1, y1 = geotools.gmt2utm(lon1, lat1, utm_zone)
-#        else:
-#            x0, y0 = lon0, lat0
-#            x1, y1 = lon1, lat1
-            lon0, lat0 = utm2gmt(x0, y0, utm_zone)
-            lon1, lat1 = utm2gmt(x1, y1, utm_zone)
+            lon0, lat0 = geotools.utm2gmt(x0, y0, utmzone)
+            lon1, lat1 = geotools.utm2gmt(x1, y1, utmzone)
             azimuth, bkw_azimuth, distance = grs80.inv(lat0, lat0, lat1, lat1)
             deg = -1 * azimuth
             rot_sx0, rot_sy0 = geotools.rot_xy(sx0, sy0, deg)
@@ -250,16 +240,10 @@ def create_geometry_from_hdrtime(s1, gpsfile, ship_conf, utmzone):
             sy = y0 + rot_sy0
             gx = x0 + rot_gx0
             gy = y0 + rot_gy0
-#        sx = gps_pos[itr,0] + ship_conf.gps_to_source_stern
-#        sy = gps_pos[itr,1] + ship_conf.gps_to_source_right
             coord = [sx,sy,gx,gy,azimuth]
             append(coord)
             x0, y0 = x1, y1
 
-######
-
-    #        utm_xyt = [utm_x, utm_y, timing]
-    #        append(utm_xyt)
     return coordination
 
 
