@@ -188,6 +188,81 @@ def create_utmxy_from_hdrtime(s1, gpsfile, utmzone):
             append(utm_xyt)
     return coordination
 
+
+def create_geometry_from_hdrtime(s1, gpsfile, ship_conf, utmzone):
+    grs80 = pyproj.Geod(ellps='GRS80')  # GRS80楕円体
+    coord = []
+#    coords = []
+#    append = coords.append
+
+    sx, sy, gx, gy= 0, 0, 0, 0
+
+    sx0 = ship_conf.gps_to_source_right
+    sy0 = -1 * ship_conf.gps_to_source_stern
+    gx0 = ship_conf.gps_to_receiver_right
+    gy0 = -1 * ship_conf.gps_to_receiver_stern
+
+    gpsdata = pd.DataFrame()
+    gpsdata = pd.read_csv(gpsfile,sep=",",names=['date_time','lat','lon'],\
+                                       parse_dates=True, header=None)
+
+    gpsdata['date_time'] = pd.to_datetime(gpsdata['date_time'])
+    gpsdata.set_index(gpsdata['date_time'],drop=True, inplace=True)
+    gpsdata = gpsdata.drop_duplicates(['date_time'])
+    gpsdata = gpsdata.sort_index()
+
+    for i in range(len(s1)):
+        coordination = []
+        append = coordination.append
+        segy = _read_segy_segy(s1[i].tape)
+        for j in range(len(segy.traces)):
+#            tr = segy.traces[j]
+            hdr = segy.traces[j].header
+#            if hdr.trace_number_within_the_original_field_record == 1:
+            strf = " ".join([str(hdr.year_data_recorded),str(hdr.day_of_year),str(hdr.hour_of_day),str(hdr.minute_of_hour),str(hdr.second_of_minute)])
+            timing = datetime.strptime(strf,'%y %j %H %M %S')
+            #print(timing)
+#            hms = datetime.strftime(timing,'%H%M%S')
+            utm_x, utm_y = findxy_from_time(gpsdata, timing, True, utmzone)
+######
+            if i==0:
+                x0 = utm_x
+                y0 = utm_y
+
+            x1 = utm_x
+            y1 = utm_y
+
+#    for itr in range(1,len(gps_pos) - 1):
+#        lon1, lat1 = gps_pos[itr][0], gps_pos[itr][1]
+#        if latlon == True:
+#            x0, y0 = geotools.gmt2utm(lon0, lat0, utm_zone)
+#            x1, y1 = geotools.gmt2utm(lon1, lat1, utm_zone)
+#        else:
+#            x0, y0 = lon0, lat0
+#            x1, y1 = lon1, lat1
+            lon0, lat0 = utm2gmt(x0, y0, utm_zone)
+            lon1, lat1 = utm2gmt(x1, y1, utm_zone)
+            azimuth, bkw_azimuth, distance = grs80.inv(lat0, lat0, lat1, lat1)
+            deg = -1 * azimuth
+            rot_sx0, rot_sy0 = geotools.rot_xy(sx0, sy0, deg)
+            rot_gx0, rot_gy0 = geotools.rot_xy(gx0, gy0, deg)
+            sx = x0 + rot_sx0
+            sy = y0 + rot_sy0
+            gx = x0 + rot_gx0
+            gy = y0 + rot_gy0
+#        sx = gps_pos[itr,0] + ship_conf.gps_to_source_stern
+#        sy = gps_pos[itr,1] + ship_conf.gps_to_source_right
+            coord = [sx,sy,gx,gy,azimuth]
+            append(coord)
+            x0, y0 = x1, y1
+
+######
+
+    #        utm_xyt = [utm_x, utm_y, timing]
+    #        append(utm_xyt)
+    return coordination
+
+
 def makesufgrp(basename, conf_f):
     s1 = []
     for i in range(len(basename)):
