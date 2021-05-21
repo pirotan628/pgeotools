@@ -219,6 +219,7 @@ def create_geometry_from_hdrtime(s1, gpsfile, ship_conf, utmzone):
 #            if hdr.trace_number_within_the_original_field_record == 1:
             strf = " ".join([str(hdr.year_data_recorded),str(hdr.day_of_year),str(hdr.hour_of_day),str(hdr.minute_of_hour),str(hdr.second_of_minute)])
             timing = datetime.strptime(strf,'%y %j %H %M %S')
+            sys.stderr.write(strf)
             #print(timing)
 #            hms = datetime.strftime(timing,'%H%M%S')
             utm_x, utm_y = findxy_from_time(gpsdata, timing, True, utmzone)
