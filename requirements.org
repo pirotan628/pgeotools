@@ -2,8 +2,7 @@
 numpy
 pandas
 obspy
-#pyproj==2.2.0
-pyproj
+pyproj==2.2.0
 pygc
 #git://git@github.com/foo/foo.git
 #git+ssh://git@github.com/foo/foo.git

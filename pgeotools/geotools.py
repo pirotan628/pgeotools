@@ -4,9 +4,21 @@
 
 import sys, math, re
 from pyproj import Proj
-from pygc import *
+#from pygc import *
 
 #from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
+
+def great_circle(dist, azimuth, latitude, longitude):
+    startLat = latitude
+    startLon = longitude
+    forwardAzimuth = azimuth
+    distance = dist
+    endLon,endLat,backAzimuth = (pyproj.Geod(ellps='WGS84').fwd(startLon,startLat,forwardAzimuth,distance))
+
+    return {'latitude': endLat,
+            'longitude': endLon,
+            'reverse_azimuth': backAzimuth}
+
 
 def rot_xy(x, y, deg):
     rad = math.radians(deg)
