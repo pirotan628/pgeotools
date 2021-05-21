@@ -4,6 +4,6 @@ pandas
 obspy
 #pyproj==2.2.0
 pyproj
-pygc
+#pygc
 #git://git@github.com/foo/foo.git
 #git+ssh://git@github.com/foo/foo.git
