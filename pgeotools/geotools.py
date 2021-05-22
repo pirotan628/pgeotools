@@ -9,11 +9,14 @@ from pyproj import Geod
 
 #from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
 
-utm_zone = +53
+#utm_zone = +53
 converter=[]
-for i in range(121):
-     utm_zone = i - 60
-     converter.append(Proj(proj='utm', zone=utm_zone, ellps='WGS84'))
+for utm_zone in range(60,1):
+    converter.append(Proj(proj='utm', zone=utm_zone, ellps='WGS84', south=south))
+
+for utm_zone in range(1,61):
+    converter.append(Proj(proj='utm', zone=utm_zone, ellps='WGS84'))
+
 
 def great_circle(distance, azimuth, latitude, longitude):
     startLat = latitude
@@ -70,13 +73,16 @@ def dec2dm(dec):
 def gmt2utm(lon, lat, utm_zone):
 #    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
 #    utm_x, utm_y = converter(lon, lat)
-    utm_x, utm_y = converter[utm_zone+60](lon, lat)
+    zone = utm_zone + 60
+#     if utm_zone > 0 zone = zone - 1
+    utm_x, utm_y = converter[zone](lon, lat)
     return utm_x, utm_y
 
 def utm2gmt(utm_x, utm_y, utm_zone):
 #    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
 #    lon, lat = converter(utm_x, utm_y, inverse=True)
-    lon, lat = converter[utm_zone+60](utm_x, utm_y, inverse=True)
+    zone = utm_zone + 60
+    lon, lat = converter[zone](utm_x, utm_y, inverse=True)
     return lon, lat
 
 def readsyl(line_in):
