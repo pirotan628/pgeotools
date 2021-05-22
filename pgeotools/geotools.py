@@ -9,6 +9,7 @@ from pyproj import Geod
 
 #from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
 
+utm_zone = +54
 converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
 
 def great_circle(distance, azimuth, latitude, longitude):
