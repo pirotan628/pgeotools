@@ -4,21 +4,23 @@
 
 import sys, math, re
 from pyproj import Proj
+from pyproj import Geod
 #from pygc import *
 
 #from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
 
-def great_circle(dist, azimuth, latitude, longitude):
+converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
+
+def great_circle(distance, azimuth, latitude, longitude):
     startLat = latitude
     startLon = longitude
     forwardAzimuth = azimuth
-    distance = dist
-    endLon,endLat,backAzimuth = (pyproj.Geod(ellps='WGS84').fwd(startLon,startLat,forwardAzimuth,distance))
+#    distance = dist
+    endLon,endLat,backAzimuth = (Geod(ellps='WGS84').fwd(startLon,startLat,forwardAzimuth,distance))
 
     return {'latitude': endLat,
             'longitude': endLon,
             'reverse_azimuth': backAzimuth}
-
 
 def rot_xy(x, y, deg):
     rad = math.radians(deg)
@@ -62,12 +64,12 @@ def dec2dm(dec):
     return dm
 
 def gmt2utm(lon, lat, utm_zone):
-    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
+#    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
     utm_x, utm_y = converter(lon, lat)
     return utm_x, utm_y
 
 def utm2gmt(utm_x, utm_y, utm_zone):
-    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
+#    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
     lon, lat = converter(utm_x, utm_y, inverse=True)
     return lon, lat
 
