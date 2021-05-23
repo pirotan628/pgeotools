@@ -11,11 +11,11 @@ from pyproj import Geod
 
 #utm_zone = +53
 converter=[]
-for utm_zone in range(60,1):
-    converter.append(Proj(proj='utm', zone=utm_zone, ellps='WGS84', south=south))
+for utmzone in reversed(range(1,61)):
+    converter.append(Proj(proj='utm', zone=utmzone, ellps='WGS84', south='south'))
 
-for utm_zone in range(1,61):
-    converter.append(Proj(proj='utm', zone=utm_zone, ellps='WGS84'))
+for utmzone in range(1,61):
+    converter.append(Proj(proj='utm', zone=utmzone, ellps='WGS84'))
 
 
 def great_circle(distance, azimuth, latitude, longitude):
@@ -75,6 +75,9 @@ def gmt2utm(lon, lat, utm_zone):
 #    utm_x, utm_y = converter(lon, lat)
     zone = utm_zone + 60
 #     if utm_zone > 0 zone = zone - 1
+#    sys.stderr.write(str(zone)+",")
+#    sys.stderr.write(str(len(converter))+"\n")
+#    conv = converter[zone]
     utm_x, utm_y = converter[zone](lon, lat)
     return utm_x, utm_y
 
