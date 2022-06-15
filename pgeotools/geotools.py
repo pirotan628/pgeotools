@@ -12,7 +12,7 @@ from pyproj import Geod
 #utm_zone = +53
 converter=[]
 for utmzone in reversed(range(1,61)):
-    converter.append(Proj(proj='utm', zone=utmzone, ellps='WGS84', south='south'))
+    converter.append(Proj(proj='utm', zone=utmzone, ellps='WGS84', south=True))
 
 for utmzone in range(1,61):
     converter.append(Proj(proj='utm', zone=utmzone, ellps='WGS84'))
