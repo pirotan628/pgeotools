@@ -17,7 +17,6 @@ for utmzone in reversed(range(1,61)):
 for utmzone in range(1,61):
     converter.append(Proj(proj='utm', zone=utmzone, ellps='WGS84'))
 
-
 def great_circle(distance, azimuth, latitude, longitude):
     startLat = latitude
     startLon = longitude
@@ -73,7 +72,7 @@ def dec2dm(dec):
 def gmt2utm(lon, lat, utm_zone):
 #    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
 #    utm_x, utm_y = converter(lon, lat)
-    zone = utm_zone + 60
+    zone = utm_zone + 59
 #     if utm_zone > 0 zone = zone - 1
 #    sys.stderr.write(str(zone)+",")
 #    sys.stderr.write(str(len(converter))+"\n")
@@ -84,7 +83,7 @@ def gmt2utm(lon, lat, utm_zone):
 def utm2gmt(utm_x, utm_y, utm_zone):
 #    converter = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
 #    lon, lat = converter(utm_x, utm_y, inverse=True)
-    zone = utm_zone + 60
+    zone = utm_zone + 59
     lon, lat = converter[zone](utm_x, utm_y, inverse=True)
     return lon, lat
 
@@ -125,7 +124,7 @@ def readsyl2(line_in):
 
 def readxy(line_in):
     line = line_in.strip()
-    token = re.split('[\t\s]',line)
+    token = list(filter(None, re.split('[\t\s]',line)))
     lon = float(token[0])
     lat = float(token[1])
     return lon, lat
