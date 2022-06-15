@@ -8,10 +8,12 @@ utmzone = PROJECT_UTM
 tmp_sps = psg.spsfile(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
 for line in sys.stdin:
-    sp, s_id, s_day, s_time, lon, lat = pg.readsyl(line)
+#    sp, s_id, s_day, s_time, lon, lat = pg.readsyl(line)
+    sp, s_id, s_day, s_time, lon, lat = pg.readsyl2(line)
     utm_x, utm_y = pg.gmt2utm(lon, lat, utmzone)
     dayofyear = datetime.strftime(datetime.strptime(s_day.strip(), '%Y/%m/%d'), '%j')
-    hms = datetime.strftime(datetime.strptime(s_time.strip(),'%H:%M:%S.%f'),'%H%M%S')
+#    hms = datetime.strftime(datetime.strptime(s_time.strip(),'%H:%M:%S.%f'),'%H%M%S')
+    hms = datetime.strftime(datetime.strptime(s_time.strip(),'%H:%M:%S'),'%H%M%S')
 
     tmp_sps.record_identification = "S"
     tmp_sps.point_number = sp

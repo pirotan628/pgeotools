@@ -99,6 +99,30 @@ def readsyl(line_in):
     lat = float(token[5])
     return sp, s_id, s_day, s_time, lon, lat
 
+def readsyl2(line_in):
+    line = line_in.strip()
+    token = re.split(' ',line)
+#    print(token)
+    sp = int(token[0])
+    s_id = str(token[1])
+    s_day = str(token[2])
+    s_time = str(token[3])
+#    lon = float(token[4])
+#    lat = float(token[5])
+    dms=[0,0,0]
+    dms[0]=float(token[4])
+    dms[1]=float(token[5])
+    dms[2]=float(token[6])
+    lon=dms2dec(dms)
+
+    dms=[0,0,0]
+    dms[0]=float(token[8])
+    dms[1]=float(token[9])
+    dms[2]=float(token[10])
+    lat=dms2dec(dms)
+
+    return sp, s_id, s_day, s_time, lon, lat
+
 def readxy(line_in):
     line = line_in.strip()
     token = re.split('[\t\s]',line)
