@@ -129,7 +129,7 @@ def get_sps_sentence(sps):
     line3 = "{0:9.1f}{1:10.1f}{2:6.1f}{3:3d}{4:6s}".format(sps.map_grid_easting,sps.map_grid_northing,sps.surface_elvation,sps.day_of_year,sps.time_hhmmss)
     sentence = line1 + line2 + line3
 
-    sys.stdout.write(sentence + "\n")
+#    sys.stdout.write(sentence + "\n")
 
     return sentence
 
