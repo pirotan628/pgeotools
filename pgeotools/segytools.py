@@ -133,7 +133,6 @@ def get_sps_sentence(sps):
 
     return sentence
 
-
 def create_sps_from_descrete(s1, gpsfile, utmzone):
 
     gpsdata = pd.DataFrame()
